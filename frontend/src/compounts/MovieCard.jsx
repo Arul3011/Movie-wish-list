@@ -4,38 +4,77 @@ import { FaStar, FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
 const MovieCared = ({ movie ,movies, setMovies }) => {
     console.log(movie[0]);
     
-    const handleWatch = (id) => {
-        const updatedMovies = movies.map((movie) => {
-            if (movie.id === id) {
-                return { ...movie, stared: !movie.stared };
+    const handleWatch = async(id,sts) => {
+
+        try {
+             const sres = await axios.patch('http://localhost:3000/api/movies/fav',{
+            data:{
+                id,
+                favorites: !sts
             }
-            return movie;
-        });
-        setMovies(updatedMovies);
+        })
+
+        if(sres.status === 200){
+            const updatedMovies = movies.map((movie) => {
+                if (movie.id === id) {
+                    return { ...movie, stared: !movie.stared };
+                }
+                return movie;
+            });
+            setMovies(updatedMovies);
+        }else{
+            alert("something went wrong in the server !")
+        }
+        } catch (error) {
+            console.error(error);
+            
+        }
+        
     };
 
-    const handleStare = async(id) => {
-         try{
-    //   const id = "zgzdhnmsgntsn";
-    const res = await axios.delete(`http://localhost:3000/api/movies`)
-    setMovies(res.data);
-    
-    }catch(error){
+    const handleStare = async(id,sts) => {
+    try {
+        const sres = await axios.patch('http://localhost:3000/api/movies/watched',{
+            data:{
+                id,
+                watched: !sts
+            }
+        })
 
+        if(sres.status === 200){
+            const updatedMovies = movies.map((movie) => {
+                if (movie._id === id) {
+                    return { ...movie, favorites: !movie.favorites };
+                }
+                return movie;
+            });
+            setMovies(updatedMovies);
+        }else{
+            alert("something went wrong in the server !")
+        }
+    } catch (error) {
+        console.error(error);
     }
-        const updatedMovies = movies.map((movie) => {
-            if (movie.id === id) {
-                return { ...movie, favorites: !movie.favorites };
-            }
-            return movie;
-        });
-        setMovies(updatedMovies);
     };
 
-    const handleDelete = (id) => {
-        const updatedMovies = movies.filter((movie) => movie.id !== id);
-        setMovies(updatedMovies);
-    };
+    const handleDelete = async (id) => {
+        try {
+          const sres = await axios.delete(`http://localhost:3000/api/movies`, {
+            data: { id },
+          });
+      
+          if (sres.status === 200) {
+            const updatedMovies = movies.filter((movie) => movie.id !== id);
+            setMovies(updatedMovies);
+          } else {
+            alert("Something went wrong on the server!");
+          }
+        } catch (error) {
+          console.log(error);
+          alert("An error occurred while deleting.");
+        }
+      };
+      
 
     return(
         <div
@@ -51,7 +90,7 @@ const MovieCared = ({ movie ,movies, setMovies }) => {
         </p>
         <div className="flex items-center gap-2">
             <button
-                onClick={() => handleStare(movie.id)}
+                onClick={() => handleStare(movie.id,movie.favorites)}
 
                 className={`flex items-center gap-1 px-4 py-2 rounded-lg text-white ${
                     movie.favorites
@@ -63,7 +102,7 @@ const MovieCared = ({ movie ,movies, setMovies }) => {
                 {movie.favorites ? "Watched" : "Watch"}
             </button>
             <button
-                onClick={() => handleWatch(movie.id)}
+                onClick={() => handleWatch(movie.id,movie.stared)}
                 className={`flex items-center gap-1 px-4 py-2 rounded-lg text-white ${
                     movie.stared
                         ? "bg-yellow-500 hover:bg-yellow-600"

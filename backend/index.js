@@ -11,14 +11,7 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
-const codespaceUrl = process.env.CODESPACE_NAME
-  ? `https://5173-${process.env.CODESPACE_NAME}.codespace.github.dev`
-  : '*'; // fallback for local dev
-
-app.use(cros({
-  origin: codespaceUrl,
-  credentials: true
-}));
+app.use(cros())
 
 app.use(express.json());
 
