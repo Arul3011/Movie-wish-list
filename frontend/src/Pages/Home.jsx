@@ -4,7 +4,7 @@ import MoviesList from "./MoviesList";
 
 const Home = ({movies, setMovies}) => {
   const [movie, setMovie] = useState({
-    id: "",
+      userId: "",
     name: "",
     year: "",
     genre: "",
@@ -15,13 +15,13 @@ const Home = ({movies, setMovies}) => {
   const handleForm = (e) => {
     e.preventDefault();
 
-    const newMovie = { ...movie, id: crypto.randomUUID() };
-    setMovies((prevMovies) => [...prevMovies, newMovie]);
+    // const newMovie = { ...movie};
+    setMovies((prevMovies) => [...prevMovies, movie]);
     // console.log(movies);
 
     
     setMovie({
-      id: "",
+      userId: "",
       name: "",
       year: "",
       genre: "",
