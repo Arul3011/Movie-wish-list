@@ -11,11 +11,18 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
-app.use(cros());
-app.use(express.json());
-// app.use(json())
+const codespaceUrl = process.env.CODESPACE_NAME
+  ? `https://5173-${process.env.CODESPACE_NAME}.codespace.github.dev`
+  : '*'; // fallback for local dev
 
-// Secret key for JWT
+app.use(cros({
+  origin: codespaceUrl,
+  credentials: true
+}));
+
+app.use(express.json());
+
+
 const SECRET_KEY = 'your_secret_key';
 
 app.use('/api/login',loginroute);

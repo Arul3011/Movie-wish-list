@@ -1,74 +1,114 @@
-
-import express from 'express'
-import clientPromise from "../lib/db.js";
+import express from 'express';
+import clientPromise from '../lib/db.js';
 import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 const client = await clientPromise;
 const db = client.db("movieListDb");
 
-// router.get('/', (req, res) => {
-//     // Handle login logic here
-//     res.send('Login route');
-// });
 router.get('/', async (req, res) => {
-     const { movieId } = req.query;
-    try {
-      const dbres = await db
-        .collection("movies")
-        .find(movieId ? { _id: new ObjectId(movieId) } : {})
-        .toArray();
-  
-      if (dbres.length > 0) {
-        return res.json({ data: dbres });
-      } else {
-        return res.json({ data: [] });
-      }
-    } catch (err) {
-      console.error("Error fetching movie:", err);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  });
+  const { movieId } = req.query;
+  try {
+    const dbres = await db
+      .collection("movies")
+      .find(movieId ? { _id: new ObjectId(movieId) } : {})
+      .toArray();
+
+    return res.json({ data: dbres });
+  } catch (err) {
+    console.error("Error fetching movie:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 router.post('/', async (req, res) => {
-    const { movieName, userID, year, genre } = req.body;
-  console.log(req.body);
-  
-    // Basic validation check to ensure required fields are provided
-    if (!movieName || !userID || !year || !genre) {
-      return res.status(400).json({ message: "All fields are required" });
+  const { movieName, userID, year, genre } = req.body;
+
+  if (!movieName || !userID || !year || !genre) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const result = await db.collection("movies").insertOne({
+      userId: userID,
+      movieName,
+      year,
+      genre,
+      favorites: false,
+      watched: false
+    });
+
+    return res.status(201).json({
+      message: "Movie added successfully",
+      data: result
+    });
+  } catch (err) {
+    console.error("Error inserting movie:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.patch('/fav', async (req, res) => {
+  const { id, favorites } = req.body;
+
+  if (!id || typeof favorites !== "boolean") {
+    return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  try {
+    const result = await db.collection("movies").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { favorites } }
+    );
+
+    return res.json({ message: "Favorite status updated", result });
+  } catch (err) {
+    console.error("Error updating favorite:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.patch('/watched', async (req, res) => {
+  const { id, watched } = req.body;
+
+  if (!id || typeof starred !== "boolean") {
+    return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  try {
+    const result = await db.collection("movies").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { watched } }
+    );
+
+    return res.json({ message: "Watched/starred status updated", result });
+  } catch (err) {
+    console.error("Error updating starred:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.delete('/', async (req, res) => {
+  const { id } = req.body;
+
+  if (!id) return res.status(400).json({ message: "Movie ID required" });
+
+  try {
+    const result = await db.collection("movies").deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 1) {
+      return res.json({ message: "Movie deleted successfully" });
+    } else {
+      return res.status(404).json({ message: "Movie not found" });
     }
-  
-    try {
-      const result = await db.collection("movies").insertOne({
-        userId: userID,
-        movieName: movieName,
-        year: year,
-        genre: genre,
-        favorites: false,
-        starred: false
-      });
-  
-      if (result.acknowledged) {
-        return res.status(201).json({
-          message: "Movie added successfully",
-          data: {
-          data : result
-          }
-        });
-      } else {
-        return res.status(500).json({ message: "Failed to add movie" });
-      }
-    } catch (err) {
-      console.error("Error inserting movie:", err);
-      return res.status(500).json({ message: "Server error" });
-    }
-  });
-  
-router.patch('/',(req,res)=>{
-    res.send("pacth");
-})
-router.delete('/',(req,res)=>{
-    res.send('delete');
-})
+  } catch (err) {
+    console.error("Error deleting movie:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;

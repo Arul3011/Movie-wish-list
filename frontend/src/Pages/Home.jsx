@@ -4,7 +4,7 @@ import MoviesList from "./MoviesList";
 
 const Home = ({movies, setMovies}) => {
   const [movie, setMovie] = useState({
-      userId: "",
+    userId: "",
     name: "",
     year: "",
     genre: "",
@@ -15,9 +15,9 @@ const Home = ({movies, setMovies}) => {
   const handleForm = (e) => {
     e.preventDefault();
 
-    // const newMovie = { ...movie};
+ 
     setMovies((prevMovies) => [...prevMovies, movie]);
-    // console.log(movies);
+
 
     
     setMovie({
@@ -30,9 +30,9 @@ const Home = ({movies, setMovies}) => {
     });
   };
 
-  useEffect(() => {
-    console.log(movie);
-  }, [movie]);
+  // useEffect(() => {
+  //   console.log(movie);
+  // }, [movie]);
 
   return (
     <>

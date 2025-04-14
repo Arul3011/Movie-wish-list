@@ -1,3 +1,4 @@
+import axios from "axios";
 import { FaStar, FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const MovieCared = ({ movie ,movies, setMovies }) => {
@@ -13,7 +14,15 @@ const MovieCared = ({ movie ,movies, setMovies }) => {
         setMovies(updatedMovies);
     };
 
-    const handleStare = (id) => {
+    const handleStare = async(id) => {
+         try{
+    //   const id = "zgzdhnmsgntsn";
+    const res = await axios.delete(`http://localhost:3000/api/movies`)
+    setMovies(res.data);
+    
+    }catch(error){
+
+    }
         const updatedMovies = movies.map((movie) => {
             if (movie.id === id) {
                 return { ...movie, favorites: !movie.favorites };
