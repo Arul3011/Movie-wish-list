@@ -1,13 +1,25 @@
 // components/Layout.jsx
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import LoginForm from '../Pages/LoginForm';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const dialogRef = useRef(null);
+  const openDialog = () => {
+    dialogRef.current?.showModal();
+  };
 
+  const closeDialog = () => {
+    dialogRef.current?.close();
+  };
+  useEffect(()=>{
+  openDialog()
+  },[])
   return (
+    <>
     <div className="relative min-h-screen">
       {/* Navbar */}
       <nav className="fixed top-0 left-0 w-full h-16 bg-gray-800 text-white flex items-center justify-between px-4 z-50">
@@ -119,7 +131,26 @@ const Layout = () => {
           <Outlet />
         </main>
       </div>
+      {/* <dialog 
+      ref={dialogRef}
+      className="backdrop:bg-black/100 w-[90%] max-w-md border-none"
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        margin: 0,
+        padding: "1.5rem",
+        borderRadius: "12px",
+        background: "white",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+      }}
+    >
+        <LoginForm />
+      </dialog> */}
     </div>
+       
+    </>
   );
 };
 
