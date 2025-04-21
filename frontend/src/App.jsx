@@ -11,13 +11,23 @@ const App = () => {
   const [movies, setMovies] = useState([]);
 
   const handelMoves = async()=>{
-    try{
-      const id = "zgzdhnmsgntsn";
-    const res = await axios.get(`http://localhost:3000/api/movies?id=${id}`)
-    setMovies(res.data);
     
-    }catch(error){
+    try{
+      // const id = "zgzdhnmsgntsn";
+      const res = await axios.get(`http://localhost:3000/api/movies`)
+      if(res.status===200) {
+        // console.log(res.data.data);
+        
+        setMovies(res.data.data);
+        console.log(res.data.data);
+        
+      }
+      else throw new Error("Error fetching movies");
+      
 
+    }catch(error){
+      console.log(error);
+      
     }
   }
 

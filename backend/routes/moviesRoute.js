@@ -24,6 +24,8 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const { movieName, userID, year, genre } = req.body;
+  // console.log(req.body);
+  
 
   if (!movieName || !userID || !year || !genre) {
     return res.status(400).json({ message: "All fields are required" });
@@ -38,11 +40,13 @@ router.post('/', async (req, res) => {
       favorites: false,
       watched: false
     });
-
-    return res.status(201).json({
-      message: "Movie added successfully",
-      data: result
-    });
+    if(result.acknowledged) {
+      return res.status(201).json({
+        message: "Movie added successfully",
+        id : result.insertedId,
+      });
+    } return res.status(500).json({ message: "Failed to add movie" });
+    
   } catch (err) {
     console.error("Error inserting movie:", err);
     return res.status(500).json({ message: "Server error" });
@@ -52,6 +56,9 @@ router.post('/', async (req, res) => {
 
 router.patch('/fav', async (req, res) => {
   const { id, favorites } = req.body;
+// console.log(
+//   req.body
+// );
 
   if (!id || typeof favorites !== "boolean") {
     return res.status(400).json({ message: "Invalid request body" });
@@ -63,7 +70,7 @@ router.patch('/fav', async (req, res) => {
       { $set: { favorites } }
     );
 
-    return res.json({ message: "Favorite status updated", result });
+    return res.status(200).json({ message: "Favorite status updated", result });
   } catch (err) {
     console.error("Error updating favorite:", err);
     return res.status(500).json({ message: "Server error" });
@@ -72,9 +79,11 @@ router.patch('/fav', async (req, res) => {
 
 
 router.patch('/watched', async (req, res) => {
+  // console.log(req.body);
+  
   const { id, watched } = req.body;
 
-  if (!id || typeof starred !== "boolean") {
+  if (!id || typeof watched !== "boolean") {
     return res.status(400).json({ message: "Invalid request body" });
   }
 
@@ -84,7 +93,7 @@ router.patch('/watched', async (req, res) => {
       { $set: { watched } }
     );
 
-    return res.json({ message: "Watched/starred status updated", result });
+    return res.status(200).json({ message: "Watched/starred status updated" });
   } catch (err) {
     console.error("Error updating starred:", err);
     return res.status(500).json({ message: "Server error" });
@@ -93,6 +102,8 @@ router.patch('/watched', async (req, res) => {
 
 
 router.delete('/', async (req, res) => {
+  // console.log("Body:", req.body); // ✅ Should now show { id: "..." }
+
   const { id } = req.body;
 
   if (!id) return res.status(400).json({ message: "Movie ID required" });
@@ -110,5 +121,6 @@ router.delete('/', async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
+
 
 export default router;

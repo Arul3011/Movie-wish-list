@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import MoviesList from "./MoviesList";
-// import Favorites from "../compounts/Favorites";
+import axios from "axios";
 
 const Home = ({movies, setMovies}) => {
   const [movie, setMovie] = useState({
-    userId: "",
+    userId: "arul",
     name: "",
     year: "",
     genre: "",
@@ -12,11 +12,41 @@ const Home = ({movies, setMovies}) => {
     stared: false,
   });
 
-  const handleForm = (e) => {
+  const handleForm = async(e) => {
     e.preventDefault();
+    
+    try {
+      const resdata = await axios.post("http://localhost:3000/api/movies",
+        {
+          userID:"arul",
+          movieName : movie.name,
+          year:movie.year,
+          genre:movie.genre,
+        });
+        if(resdata.status === 201) {
+          const newMovie = {  
+            userId: "arul",
+            movieName: movie.name,
+            year: movie.year,
+            genre: movie.genre,
+            favorites: false,
+            stared: false,
+            _id: resdata.data.id,
+          }
+          console.log(resdata.data.id);
+          
+          setMovies((prev) => [ 
+            ...prev,
+            newMovie,
+          ]);
 
+        }
+         
+    } catch (error) {
+      
+    }
  
-    setMovies((prevMovies) => [...prevMovies, movie]);
+   
 
 
     
@@ -30,9 +60,6 @@ const Home = ({movies, setMovies}) => {
     });
   };
 
-  // useEffect(() => {
-  //   console.log(movie);
-  // }, [movie]);
 
   return (
     <>
