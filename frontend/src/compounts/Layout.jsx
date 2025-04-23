@@ -7,17 +7,8 @@ import LoginForm from '../Pages/LoginForm';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const dialogRef = useRef(null);
-  const openDialog = () => {
-    dialogRef.current?.showModal();
-  };
+  
 
-  const closeDialog = () => {
-    dialogRef.current?.close();
-  };
-  useEffect(()=>{
-  openDialog()
-  },[])
   return (
     <>
     <div className="relative min-h-screen">
@@ -131,25 +122,7 @@ const Layout = () => {
           <Outlet />
         </main>
       </div>
-      {/* <dialog 
-      ref={dialogRef}
-      className="backdrop:bg-black/100 w-[90%] max-w-md border-none"
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        margin: 0,
-        padding: "1.5rem",
-        borderRadius: "12px",
-        background: "white",
-        boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-      }}
-    >
-        <LoginForm />
-      </dialog> */}
     </div>
-       
     </>
   );
 };
